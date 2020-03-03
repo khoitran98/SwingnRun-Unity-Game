@@ -11,8 +11,9 @@ A simple endless running web game.
 * Bayat Game Assets Library
 
 ## Screenshot
-![Screen Shot 2020-03-02 at 17 05 57](https://user-images.githubusercontent.com/32660699/75726603-68c19680-5ca8-11ea-9c45-d449ae9d1182.png
-https://user-images.githubusercontent.com/32660699/75726654-8e4ea000-5ca8-11ea-90aa-112859e57109.png
-https://user-images.githubusercontent.com/32660699/75726659-90186380-5ca8-11ea-9cc6-53f4c8ef3d40.png
+<img src="https://user-images.githubusercontent.com/32660699/75726603-68c19680-5ca8-11ea-9c45-d449ae9d1182.png"/>
+<img src="https://user-images.githubusercontent.com/32660699/75726654-8e4ea000-5ca8-11ea-90aa-112859e57109.png"/>
+<img src="https://user-images.githubusercontent.com/32660699/75726659-90186380-5ca8-11ea-9cc6-53f4c8ef3d40.png"/>
+
 
 
