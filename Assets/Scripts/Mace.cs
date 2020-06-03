@@ -9,7 +9,7 @@ public class Mace : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        Debug.Log("master");
     }
     // Update is called once per frame
     void Update()
