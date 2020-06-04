@@ -9,8 +9,8 @@ public class RopeSystem : MonoBehaviour
     public LayerMask ropeLayerMask; // which physiscs layers the grappling hook raycast can hit
     public GameObject ropeHingeAnchor;
     public DistanceJoint2D ropeJoint;
-//   public Transform crosshair;
- //   public SpriteRenderer crosshairSprite;
+    // public Transform crosshair;
+    // public SpriteRenderer crosshairSprite;
     public PlayerMovement playerMovement;
     private bool ropeAttached; // when rope hits
     private Vector2 playerPosition;
@@ -50,7 +50,7 @@ public class RopeSystem : MonoBehaviour
     void OnGameOverConfirmed () 
     {
         gameStarted = false;
-    }    // Update is called once per frame
+    }   // Update is called once per frame
     void Dead()
     {
         gameStarted = false;
@@ -138,7 +138,6 @@ public class RopeSystem : MonoBehaviour
         playerMovement.groundPull = false;
         counter = 0f;
     }
-   //dmcs
     private void UpdateRopePositions()
     {
         if (distanceSet) 

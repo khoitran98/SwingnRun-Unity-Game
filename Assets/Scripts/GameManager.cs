@@ -26,6 +26,25 @@ public class GameManager : MonoBehaviour
     int scoreLost = 0; // score lost from mace collision
     int score = 0; // overall score
     int scoreBonus = 0; // score gained from coin
+
+    // testing neural
+    // [Range(-1f,1f)]
+    // public float a,t;
+
+    public float timeSinceStart = 0f;
+
+    [Header("Fitness")]
+    public float overallFitness;
+    public float distanceMultipler = 1.4f;
+    public float avgSpeedMultiplier = 0.2f;
+    public float sensorMultiplier = 0.1f;
+
+    private Vector3 lastPosition;
+    private float totalDistanceTravelled;
+    private float avgSpeed;
+
+    private float aSensor,bSensor,cSensor;
+    
     void Awake() 
     {
         Instance = this;
@@ -63,8 +82,13 @@ public class GameManager : MonoBehaviour
         if (score > savedScore) {
             PlayerPrefs.SetInt("HighScore", score);
         }
-        SetPageState(PageState.GameOver);
-        Time.timeScale = 0; // temporarily pause game
+        // SetPageState(PageState.GameOver);
+        // Time.timeScale = 0; // temporarily pause game
+        ConfirmGameOver() ; // for testing only
+    }
+    void Start()
+    {
+        SetPageState(PageState.Countdown); // for testing only
     }
     void OnPlayerScored() 
     {
@@ -103,12 +127,14 @@ public class GameManager : MonoBehaviour
         //when replay
         OnGameOverConfirmed(); // event sent to tap controller
         score = scoreGain = scoreLost = scoreBonus = 0; // reset the score
-        SetPageState(PageState.Start);
-    }
-    public void StartGame() 
-    { // when play
+        //SetPageState(PageState.Start);
         SetPageState(PageState.Countdown);
+
     }
+    // public void StartGame() 
+    // { // when play
+    //     SetPageState(PageState.Countdown);
+    // }
     void Update()
     {
         scoreGain = (int)transform.position.x - xPos; // using travelled distance as score
@@ -119,5 +145,66 @@ public class GameManager : MonoBehaviour
             xPos = (int)transform.position.x;
         }
         Score.text = (score).ToString();
+        InputSensors();
+         
+    }
+
+    // testing neural
+    // private void FixedUpdate() {
+
+    //     InputSensors();
+    //     lastPosition = transform.position;
+
+    //     //Neural network code here
+
+
+    //     timeSinceStart += Time.deltaTime;
+
+    //     CalculateFitness();
+
+    // }
+
+     private void CalculateFitness() {
+        totalDistanceTravelled = score;
+        avgSpeed = totalDistanceTravelled/timeSinceStart;
+        overallFitness = (totalDistanceTravelled*distanceMultipler)+(avgSpeed*avgSpeedMultiplier)+(((aSensor+bSensor+cSensor)/3)*sensorMultiplier);
+        // Debug.Log("fitness " + overallFitness);
+        // if (timeSinceStart > 20 && overallFitness < 40) {
+        //     Reset();
+        // }
+        // if (overallFitness >= 1000) {
+        //     //Saves network to a JSON
+        //     Reset();
+        // }
+
+    }
+
+    private void InputSensors() {
+
+        // Vector3 a = (transform.forward+transform.right);
+        // Vector3 b = (transform.forward);
+        // Vector3 c = (transform.forward-transform.right);
+        Vector3 a = new Vector3(0f, 1f, 0f);
+        Vector3 b = new Vector3(1f, 0f, 0f);
+        Vector3 c = new Vector3(1f, 1f, 0f);
+        RaycastHit2D hit;
+        hit = Physics2D.Raycast(transform.position, Vector2.right);
+        if (hit.collider != null) {
+            aSensor = hit.distance/20;
+            Debug.Log("a " + aSensor);
+            Debug.Log("object " + hit.collider.gameObject);
+        }
+        hit = Physics2D.Raycast(transform.position, Vector2.right + Vector2.up);
+        if (hit.collider != null) {
+            bSensor = hit.distance/20;
+            Debug.Log("b " + bSensor);
+            Debug.Log("object " + hit.collider.gameObject);
+        }
+        hit = Physics2D.Raycast(transform.position, Vector2.right + Vector2.down);
+        if (hit.collider != null) {
+            cSensor = hit.distance/20;
+            Debug.Log("c " + cSensor);
+            Debug.Log("object " + hit.collider.gameObject);
+        }
     }
 }

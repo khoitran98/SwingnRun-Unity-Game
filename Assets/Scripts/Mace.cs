@@ -9,7 +9,6 @@ public class Mace : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("master");
     }
     // Update is called once per frame
     void Update()
@@ -17,7 +16,7 @@ public class Mace : MonoBehaviour
         
     }
     void OnCollisionEnter2D (Collision2D collision2D) // Deduct score when collides with mace
-		{
-			OnPlayerLoseScore();
-		} 
+    {
+        OnPlayerLoseScore();
+    } 
 }
