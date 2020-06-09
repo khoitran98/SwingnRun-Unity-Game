@@ -153,21 +153,19 @@ public class GameManager : MonoBehaviour
             xPos = (int)transform.position.x;
         }
         Score.text = (score).ToString();
+        // testing neural
         InputSensors();
-        lastPosition = transform.position;
+        lastPosition = transform.position; 
         //Neural network code here
         timeSinceStart += Time.deltaTime;
         CalculateFitness();
         // For neural network testing
         if (score >= 100) {
-            //Saves network to a JSON
-            Debug.Log("score : " + score);
-            ConfirmGameOver();
+            ConfirmGameOver(); // if score is already too high, reset
         }
-        if (lastScore == score)
+        if (lastScore == score) // if stucked for more than 4 seconds, reset
         {
             stuckTime += Time.deltaTime;
-            Debug.Log(stuckTime);
             if (stuckTime >= 4)
                 ConfirmGameOver();
         }
@@ -176,7 +174,6 @@ public class GameManager : MonoBehaviour
             stuckTime = 0;
         }   
     }
-
     // testing neural
     private void FixedUpdate() {
 
@@ -186,13 +183,11 @@ public class GameManager : MonoBehaviour
         // timeSinceStart += Time.deltaTime;
         // CalculateFitness();
     }
-
      private void CalculateFitness() {
         totalDistanceTravelled = score;
         avgSpeed = totalDistanceTravelled/timeSinceStart;
         overallFitness = (totalDistanceTravelled*distanceMultipler)+(avgSpeed*avgSpeedMultiplier)+(((aSensor+bSensor+cSensor)/3)*sensorMultiplier);
     }
-
     private void InputSensors() {
 
         // Vector3 a = (transform.forward+transform.right);
