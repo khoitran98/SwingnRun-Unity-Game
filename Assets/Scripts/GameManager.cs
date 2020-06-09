@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject GameOver;
     public GameObject CountDownPage;
     public Text Score;
+    private GameObject character;
     private int xPos; // variable to calculate the score
     enum PageState {
         None,
@@ -44,6 +45,8 @@ public class GameManager : MonoBehaviour
     private float avgSpeed;
 
     private float aSensor,bSensor,cSensor;
+    private float lastScore; // used to calculate stuck time
+    private float stuckTime; // character stalemate time
     
     void Awake() 
     {
@@ -74,6 +77,8 @@ public class GameManager : MonoBehaviour
         SetPageState(PageState.None);
         OnGameStarted();
         score = 0;
+        timeSinceStart = 0; // testing neural
+        stuckTime = 0; // testing neural
     }
     void OnPlayerDied() 
     {
@@ -89,6 +94,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetPageState(PageState.Countdown); // for testing only
+        character = GameObject.Find("Character");
+        stuckTime = 0;
     }
     void OnPlayerScored() 
     {
@@ -137,6 +144,7 @@ public class GameManager : MonoBehaviour
     // }
     void Update()
     {
+        lastScore = score;
         scoreGain = (int)transform.position.x - xPos; // using travelled distance as score
         score = scoreGain + scoreLost + scoreBonus;
         if (score < 0)
@@ -146,37 +154,43 @@ public class GameManager : MonoBehaviour
         }
         Score.text = (score).ToString();
         InputSensors();
-         
+        lastPosition = transform.position;
+        //Neural network code here
+        timeSinceStart += Time.deltaTime;
+        CalculateFitness();
+        // For neural network testing
+        if (score >= 100) {
+            //Saves network to a JSON
+            Debug.Log("score : " + score);
+            ConfirmGameOver();
+        }
+        if (lastScore == score)
+        {
+            stuckTime += Time.deltaTime;
+            Debug.Log(stuckTime);
+            if (stuckTime >= 4)
+                ConfirmGameOver();
+        }
+        else
+        {
+            stuckTime = 0;
+        }   
     }
 
     // testing neural
-    // private void FixedUpdate() {
+    private void FixedUpdate() {
 
-    //     InputSensors();
-    //     lastPosition = transform.position;
-
-    //     //Neural network code here
-
-
-    //     timeSinceStart += Time.deltaTime;
-
-    //     CalculateFitness();
-
-    // }
+        // InputSensors();
+        // lastPosition = transform.position;
+        // //Neural network code here
+        // timeSinceStart += Time.deltaTime;
+        // CalculateFitness();
+    }
 
      private void CalculateFitness() {
         totalDistanceTravelled = score;
         avgSpeed = totalDistanceTravelled/timeSinceStart;
         overallFitness = (totalDistanceTravelled*distanceMultipler)+(avgSpeed*avgSpeedMultiplier)+(((aSensor+bSensor+cSensor)/3)*sensorMultiplier);
-        // Debug.Log("fitness " + overallFitness);
-        // if (timeSinceStart > 20 && overallFitness < 40) {
-        //     Reset();
-        // }
-        // if (overallFitness >= 1000) {
-        //     //Saves network to a JSON
-        //     Reset();
-        // }
-
     }
 
     private void InputSensors() {
@@ -188,23 +202,17 @@ public class GameManager : MonoBehaviour
         Vector3 b = new Vector3(1f, 0f, 0f);
         Vector3 c = new Vector3(1f, 1f, 0f);
         RaycastHit2D hit;
-        hit = Physics2D.Raycast(transform.position, Vector2.right);
+        hit = Physics2D.Raycast(character.transform.position + new Vector3(1f, 0f, 0f), Vector2.right, 18f);
         if (hit.collider != null) {
             aSensor = hit.distance/20;
-            Debug.Log("a " + aSensor);
-            Debug.Log("object " + hit.collider.gameObject);
         }
-        hit = Physics2D.Raycast(transform.position, Vector2.right + Vector2.up);
+        hit = Physics2D.Raycast(character.transform.position + new Vector3(1f, 0f, 0f), Vector2.right + Vector2.up);
         if (hit.collider != null) {
             bSensor = hit.distance/20;
-            Debug.Log("b " + bSensor);
-            Debug.Log("object " + hit.collider.gameObject);
         }
-        hit = Physics2D.Raycast(transform.position, Vector2.right + Vector2.down);
+        hit = Physics2D.Raycast(character.transform.position + new Vector3(1f, 0f, 0f), Vector2.right + Vector2.down);
         if (hit.collider != null) {
             cSensor = hit.distance/20;
-            Debug.Log("c " + cSensor);
-            Debug.Log("object " + hit.collider.gameObject);
         }
     }
 }
