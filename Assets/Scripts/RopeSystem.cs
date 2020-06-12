@@ -23,6 +23,15 @@ public class RopeSystem : MonoBehaviour
     private float counter;
     private float aimAngle;
     private bool gameStarted;
+    public GameObject cam; // testing neural net, adding camera object
+    private float sensorA, sensorB, sensorC; // sensors from GameManager script
+    public NNet network; //testing neural net
+    public float leftMouse;
+    public float rightMouse;
+    public float isRopeAttached;
+    [Header("Network Options")]
+    public int LAYERS = 1;
+    public int NEURONS = 10;
     void Awake ()
     {   
         ropeJoint.enabled = false;
@@ -30,6 +39,10 @@ public class RopeSystem : MonoBehaviour
         ropeHingeAnchorRb = ropeHingeAnchor.GetComponent<Rigidbody2D>();
         character = GetComponent<Rigidbody2D>();
         ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
+        network = GetComponent<NNet>(); 
+        network.Initialise(LAYERS, NEURONS);   
+        leftMouse = rightMouse = 0;
+        ropeAttached = false;
     }
     void OnEnable() 
     {
@@ -55,9 +68,22 @@ public class RopeSystem : MonoBehaviour
     {
         gameStarted = false;
         ResetRope();
+        network.Initialise(LAYERS, NEURONS);
     }
     void Update ()
 	{  
+        sensorA = cam.GetComponent<GameManager>().aSensor;
+        sensorB = cam.GetComponent<GameManager>().bSensor;
+        sensorC = cam.GetComponent<GameManager>().cSensor;
+        if (!ropeAttached)
+        {
+            isRopeAttached = 0;
+	    }
+	    else 
+        {
+            isRopeAttached = 1;
+        }
+        (leftMouse, rightMouse) = network.RunNetwork(sensorA, sensorB, sensorC, ropeAttached); // neural net
         if (counter >= ropeJoint.distance && !distanceSet && ropeAttached) //update the rope distance instantly after the rope line is rendered to prevent rope pulling back by distance joint
         { 
             ropeJoint.distance = Vector2.Distance(transform.position, ropePositions[0]);
@@ -70,8 +96,11 @@ public class RopeSystem : MonoBehaviour
         playerPosition = transform.position;
         var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
         var facingDirection = worldMousePosition - transform.position;
-        aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
-        var aimDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        //aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
+        //  var aimDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        // or 0.88f???
+        aimAngle = (0.52f + 0.88f * leftMouse) * Mathf.Rad2Deg; // neural net
+        var aimDirection = Quaternion.Euler(0, 0, aimAngle) * Vector2.right; // neural net
         if (!ropeAttached)
         {
             playerMovement.isSwinging = false;
@@ -85,13 +114,18 @@ public class RopeSystem : MonoBehaviour
     }
     private void HandleInput(Vector2 aimDirection)
     {
-        if (Input.GetMouseButton(0))
+        //if (Input.GetMouseButton(0))
+        
+        if (!ropeAttached) // testing neural net
         {  
-            if (aimAngle < .52 || aimAngle > 1.4) return; // setting the range for aiming angle
+            Debug.Log(aimAngle);
+            //if (aimAngle < .52 || aimAngle > 1.4) return; // setting the range for aiming angle
+            if (aimAngle < 30 || aimAngle > 80) return; // setting the range for aiming angle
             if (ropeAttached) return; // Prevent creating a new rope when already swinging
             if (!gameStarted) return; // Preventing creating rope when game hasn't started
             ropeRenderer.enabled = true;
             var hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
+            Debug.Log(aimDirection.ToString("F4"));
             if (hit.collider != null) // if the rope hits a valid target
             {
                 ropeAttached = true;
@@ -107,6 +141,7 @@ public class RopeSystem : MonoBehaviour
                         ropeJoint.distance = Vector2.Distance(playerPosition, hit.point) - 0.1f; // lift the character from the ground to swing
                         playerMovement.groundPull = true;
                     }
+                    Debug.Log("ropeattached");
                     ropePositions.Add(hit.point);
                     ropeJoint.enabled = true;
                     ropeHingeAnchorSprite.enabled = true;
@@ -119,7 +154,8 @@ public class RopeSystem : MonoBehaviour
                 ropeAttached = false;  
             }
         }
-        if (Input.GetMouseButton(1))
+        //if (Input.GetMouseButton(1))
+        if (rightMouse >= 0.5)
         {
             ResetRope(); //  right click to disable the rope
         }

@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
     private float totalDistanceTravelled;
     private float avgSpeed;
 
-    private float aSensor,bSensor,cSensor;
+    public float aSensor,bSensor,cSensor; // 3 object detection sensors
     private float lastScore; // used to calculate stuck time
     private float stuckTime; // character stalemate time
     
@@ -189,15 +189,8 @@ public class GameManager : MonoBehaviour
         overallFitness = (totalDistanceTravelled*distanceMultipler)+(avgSpeed*avgSpeedMultiplier)+(((aSensor+bSensor+cSensor)/3)*sensorMultiplier);
     }
     private void InputSensors() {
-
-        // Vector3 a = (transform.forward+transform.right);
-        // Vector3 b = (transform.forward);
-        // Vector3 c = (transform.forward-transform.right);
-        Vector3 a = new Vector3(0f, 1f, 0f);
-        Vector3 b = new Vector3(1f, 0f, 0f);
-        Vector3 c = new Vector3(1f, 1f, 0f);
         RaycastHit2D hit;
-        hit = Physics2D.Raycast(character.transform.position + new Vector3(1f, 0f, 0f), Vector2.right, 18f);
+        hit = Physics2D.Raycast(character.transform.position + new Vector3(1f, 0f, 0f), Vector2.right, 18f); // only make this ray short to fit the screen
         if (hit.collider != null) {
             aSensor = hit.distance/20;
         }

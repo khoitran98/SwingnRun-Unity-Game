@@ -58,8 +58,10 @@
      <Compile Include="Assets\Scripts\Controller.cs" />
      <Compile Include="Assets\Scripts\CountdownText.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
+     <Compile Include="Assets\Scripts\GeneticManager.cs" />
      <Compile Include="Assets\Scripts\HighescoreText.cs" />
      <Compile Include="Assets\Scripts\Mace.cs" />
+     <Compile Include="Assets\Scripts\NNet.cs" />
      <Compile Include="Assets\Scripts\ObjectPooler.cs" />
      <Compile Include="Assets\Scripts\PlatformDestroyer.cs" />
      <Compile Include="Assets\Scripts\PlatformGenerator.cs" />
