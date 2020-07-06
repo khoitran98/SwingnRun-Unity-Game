@@ -122,23 +122,23 @@ public class RopeSystem : MonoBehaviour
                 index = i;
             }
         }
-        switch (index)
-        {
-            case 0:
-                Debug.Log("setRope");
-                break;
-            case 1:
-                Debug.Log("resetRope");
-                break;
-            case 2:
-                Debug.Log("nothing");
-                break;
-            case 3:
-                Debug.Log("cheat");
-                break;  
-            default:
-                break;
-        }
+        // switch (index)
+        // {
+        //     case 0:
+        //         Debug.Log("setRope");
+        //         break;
+        //     case 1:
+        //         Debug.Log("resetRope");
+        //         break;
+        //     case 2:
+        //         Debug.Log("nothing");
+        //         break;
+        //     case 3:
+        //         Debug.Log("cheat");
+        //         break;  
+        //     default:
+        //         break;
+        // }
         if (counter >= ropeJoint.distance && !distanceSet && ropeAttached) //update the rope distance instantly after the rope line is rendered to prevent rope pulling back by distance joint
         { 
             ropeJoint.distance = Vector2.Distance(transform.position, ropePositions[0]);
