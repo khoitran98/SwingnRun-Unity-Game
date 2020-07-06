@@ -6,20 +6,22 @@ public class Water : MonoBehaviour
 {
     public delegate void PlayerDelegate();
 	public static event PlayerDelegate OnPlayerDied;
+    private bool onShield;
+    
     // Start is called before the first frame update
     void Start()
     {
         
     }
-
     // Update is called once per frame
     void Update()
     {
-        
+        onShield =  GameObject.Find("bubbleShield").GetComponent<Shield>().onShield;
     }
     void OnCollisionEnter2D (Collision2D collision2D)
 		{
-			//OnPlayerDied();
+            if (!onShield)
+			    OnPlayerDied();
 		} 
     
 }

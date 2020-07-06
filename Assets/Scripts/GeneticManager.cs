@@ -58,7 +58,6 @@ public class GeneticManager : MonoBehaviour
     public void Death (float fitness, NNet network)
     {
         // testing save network
-        Debug.Log(fitness);
         if (fitness > 50) // testing save network if fitness > 50 at death
             population[currentGenome].saveNetwork();
         if (currentGenome < population.Length -1)

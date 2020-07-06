@@ -9,14 +9,17 @@ using UnityEngine;
 		private Transform targetRotation;
 		private float m_Speed = 3f;
 		private bool m_RotateClockwise = false;
+		private bool onShield;
 		void Start ()
 		{
 			if (targetRotation == null) {
 				targetRotation = transform;
 			}
+			onShield = false;
 		}
 		void Update ()
 		{
+			onShield =  GameObject.Find("bubbleShield").GetComponent<Shield>().onShield;
 			Vector3 rotation = targetRotation.rotation.eulerAngles;
 			if (!m_RotateClockwise) {
 				rotation.z += m_Speed;
@@ -27,7 +30,8 @@ using UnityEngine;
 		}
 		void OnCollisionEnter2D (Collision2D collision2D) // end the game if collides with saw
 		{
-			//OnPlayerDied();
+			if (!onShield)
+				OnPlayerDied();
 		} 
 	}
 

@@ -68,6 +68,7 @@
      <Compile Include="Assets\Scripts\PlayerMovement.cs" />
      <Compile Include="Assets\Scripts\RopeSystem.cs" />
      <Compile Include="Assets\Scripts\Saw.cs" />
+     <Compile Include="Assets\Scripts\Shield.cs" />
      <Compile Include="Assets\Scripts\Water.cs" />
      <None Include="Assets\BayatGames\Free Platform Game Assets\Readme.txt" />
  <Reference Include="Unity.TextMeshPro.Editor">

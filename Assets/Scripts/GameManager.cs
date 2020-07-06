@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
     }
     void OnPlayerLoseScore() 
     {
-        scoreLost -= 30;
+        scoreLost -= 10;
     }
     void SetPageState (PageState state) {
         switch (state) {
