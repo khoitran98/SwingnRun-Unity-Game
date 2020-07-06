@@ -13,7 +13,7 @@ public class NNet : MonoBehaviour
 
     public List<Matrix<float>> hiddenLayers = new List<Matrix<float>>();
 
-    public Matrix<float> outputLayer = Matrix<float>.Build.Dense(1, 2);
+    public Matrix<float> outputLayer = Matrix<float>.Build.Dense(1, 5);
 
     public List<Matrix<float>> weights = new List<Matrix<float>>();
 
@@ -43,12 +43,56 @@ public class NNet : MonoBehaviour
             weights.Add(HiddenToHidden);
 
         }
-        Matrix<float> OutputWeight = Matrix<float>.Build.Dense(hiddenNeuronCount, 2);
+        Matrix<float> OutputWeight = Matrix<float>.Build.Dense(hiddenNeuronCount, 5);
         weights.Add(OutputWeight);
         biases.Add(Random.Range(-1f, 1f));
 
         RandomiseWeights();
 
+    }
+    public NNet InitialiseCopy (int hiddenLayerCount, int hiddenNeuronCount)
+    {
+        NNet n = new NNet();
+
+        List<Matrix<float>> newWeights = new List<Matrix<float>>();
+
+        for (int i = 0; i < this.weights.Count; i++)
+        {
+            Matrix<float> currentWeight = Matrix<float>.Build.Dense(weights[i].RowCount, weights[i].ColumnCount);
+
+            for (int x = 0; x < currentWeight.RowCount; x++)
+            {
+                for (int y = 0; y < currentWeight.ColumnCount; y++)
+                {
+                    currentWeight[x, y] = weights[i][x, y];
+                }
+            }
+
+            newWeights.Add(currentWeight);
+        }
+
+        List<float> newBiases = new List<float>();
+
+        newBiases.AddRange(biases);
+
+        n.weights = newWeights;
+        n.biases = newBiases;
+
+        n.InitialiseHidden(hiddenLayerCount, hiddenNeuronCount);
+
+        return n;
+    }
+    public void InitialiseHidden (int hiddenLayerCount, int hiddenNeuronCount)
+    {
+        inputLayer.Clear();
+        hiddenLayers.Clear();
+        outputLayer.Clear();
+
+        for (int i = 0; i < hiddenLayerCount + 1; i ++)
+        {
+            Matrix<float> newHiddenLayer = Matrix<float>.Build.Dense(1, hiddenNeuronCount);
+            hiddenLayers.Add(newHiddenLayer);
+        }
     }
     public void RandomiseWeights()
     {
@@ -63,15 +107,11 @@ public class NNet : MonoBehaviour
                 {
 
                     weights[i][x, y] = Random.Range(-1f, 1f);
-
                 }
-
             }
-
         }
-
     }
-    public (float, float) RunNetwork (float a, float b, float c, bool d)
+    public (float, float, float, float, float) RunNetwork (float a, float b, float c, bool d)
     {
         inputLayer[0, 0] = Sigmoid(a);
         inputLayer[0, 1] = Sigmoid(b);
@@ -88,7 +128,7 @@ public class NNet : MonoBehaviour
         }
 
         outputLayer = ((hiddenLayers[hiddenLayers.Count-1]*weights[weights.Count-1])+biases[biases.Count-1]).PointwiseTanh();
-        return (Sigmoid(outputLayer[0,0]), Sigmoid(outputLayer[0,1]));
+        return (Sigmoid(outputLayer[0,0]), Sigmoid(outputLayer[0,1]), Sigmoid(outputLayer[0,2]), Sigmoid(outputLayer[0,3]), Sigmoid(outputLayer[0,4]));
     }
 
     private float Sigmoid (float s)

@@ -22,6 +22,7 @@ public class GeneticManager : MonoBehaviour
     private int naturallySelected;
 
     private NNet[] population;
+    public RopeSystem ropeSystem;
 
     [Header("Public View")]
     public int currentGeneration;
@@ -41,7 +42,7 @@ public class GeneticManager : MonoBehaviour
 
     private void ResetToCurrentGenome()
     {
-        controller.ResetWithNetwork(population[currentGenome]);
+        ropeSystem.ResetWithNetwork(population[currentGenome]);
     }
 
     private void FillPopulationWithRandomValues (NNet[] newPopulation, int startingIndex)
@@ -49,7 +50,7 @@ public class GeneticManager : MonoBehaviour
         while (startingIndex < initialPopulation)
         {
             newPopulation[startingIndex] = new NNet();
-            newPopulation[startingIndex].Initialise(controller.LAYERS, controller.NEURONS);
+            newPopulation[startingIndex].Initialise(ropeSystem.LAYERS, ropeSystem.NEURONS);
             startingIndex++;
         }
     }
@@ -152,17 +153,12 @@ public class GeneticManager : MonoBehaviour
                         break;
                 }
             }
-
             NNet Child1 = new NNet();
             NNet Child2 = new NNet();
-
-            Child1.Initialise(controller.LAYERS, controller.NEURONS);
-            Child2.Initialise(controller.LAYERS, controller.NEURONS);
-
+            Child1.Initialise(ropeSystem.LAYERS, ropeSystem.NEURONS);
+            Child2.Initialise(ropeSystem.LAYERS, ropeSystem.NEURONS);
             Child1.fitness = 0;
             Child2.fitness = 0;
-
-
             for (int w = 0; w < Child1.weights.Count; w++)
             {
 
@@ -178,8 +174,6 @@ public class GeneticManager : MonoBehaviour
                 }
 
             }
-
-
             for (int w = 0; w < Child1.biases.Count; w++)
             {
 
@@ -195,10 +189,8 @@ public class GeneticManager : MonoBehaviour
                 }
 
             }
-
             newPopulation[naturallySelected] = Child1;
             naturallySelected++;
-
             newPopulation[naturallySelected] = Child2;
             naturallySelected++;
 
@@ -209,7 +201,7 @@ public class GeneticManager : MonoBehaviour
         NNet[] newPopulation = new NNet[initialPopulation];
         for (int i = 0; i < bestAgentSelection; i++)
         {
-            newPopulation[naturallySelected] = population[i].InitialiseCopy(controller.LAYERS, controller.NEURONS);
+            newPopulation[naturallySelected] = population[i].InitialiseCopy(ropeSystem.LAYERS, ropeSystem.NEURONS);
             newPopulation[naturallySelected].fitness = 0;
             naturallySelected++;
             

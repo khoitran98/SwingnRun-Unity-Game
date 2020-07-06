@@ -2445,6 +2445,9 @@ MonoBehaviour:
   distanceMultipler: 1.4
   avgSpeedMultiplier: 0.2
   sensorMultiplier: 0.1
+  aSensor: 0
+  bSensor: 0
+  cSensor: 0
 --- !u!114 &228754321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6668,7 +6671,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.43817255, y: 0.47386572}
   m_AnchorMax: {x: 0.5536482, y: 0.67346275}
-  m_AnchoredPosition: {x: -384, y: 152}
+  m_AnchoredPosition: {x: -384.00006, y: 152}
   m_SizeDelta: {x: 0.6257477, y: -6.9885406}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &707483058
@@ -9745,6 +9748,7 @@ GameObject:
   - component: {fileID: 1111555435}
   - component: {fileID: 1111555436}
   - component: {fileID: 1111555438}
+  - component: {fileID: 1111555437}
   m_Layer: 10
   m_Name: Character
   m_TagString: Untagged
@@ -10019,6 +10023,28 @@ MonoBehaviour:
   ropeHingeAnchor: {fileID: 1391923162}
   ropeJoint: {fileID: 1111555434}
   playerMovement: {fileID: 1111555433}
+  cam: {fileID: 228754316}
+  network: {fileID: 0}
+  leftMouse: 0
+  rightMouse: 0
+  isRopeAttached: 0
+  LAYERS: 1
+  NEURONS: 10
+  overallFitness: 0
+--- !u!114 &1111555437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111555427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fda745f3b0724e4da78ecb76124726f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  biases: []
+  fitness: 0
 --- !u!61 &1111555438
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -20035,6 +20061,57 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe8a82e7974d38247bc88b8c58c43001, type: 3}
+--- !u!1 &2105060414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2105060416}
+  - component: {fileID: 2105060415}
+  m_Layer: 0
+  m_Name: Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2105060415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2105060414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37dd05c792bc1474ba98e22b7159ac4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialPopulation: 85
+  mutationRate: 0.055
+  bestAgentSelection: 8
+  worstAgentSelection: 3
+  numberToCrossover: 39
+  ropeSystem: {fileID: 1111555436}
+  currentGeneration: 0
+  currentGenome: 0
+--- !u!4 &2105060416
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2105060414}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.3441458, y: -3.1056957, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2105541105
 GameObject:
   m_ObjectHideFlags: 0

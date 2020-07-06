@@ -28,10 +28,17 @@ public class RopeSystem : MonoBehaviour
     public NNet network; //testing neural net
     public float leftMouse;
     public float rightMouse;
+    public float resetRope;
+    public float setRope;
+    public float cheat;
+    public float nothing;
+    public float shootAngle;
+    public float[] outputs;
     public float isRopeAttached;
     [Header("Network Options")]
     public int LAYERS = 1;
     public int NEURONS = 10;
+    public float overallFitness;
     void Awake ()
     {   
         ropeJoint.enabled = false;
@@ -39,10 +46,10 @@ public class RopeSystem : MonoBehaviour
         ropeHingeAnchorRb = ropeHingeAnchor.GetComponent<Rigidbody2D>();
         character = GetComponent<Rigidbody2D>();
         ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
-        network = GetComponent<NNet>(); 
-        network.Initialise(LAYERS, NEURONS);   
+        network = GetComponent<NNet>();   
         leftMouse = rightMouse = 0;
         ropeAttached = false;
+        outputs = new float[5];
     }
     void OnEnable() 
     {
@@ -68,10 +75,24 @@ public class RopeSystem : MonoBehaviour
     {
         gameStarted = false;
         ResetRope();
-        network.Initialise(LAYERS, NEURONS);
+        GameObject.FindObjectOfType<GeneticManager>().Death(overallFitness, network);
     }
     void Update ()
 	{  
+        Vector2 center = new Vector2(transform.position.x + 5f, 0);
+        float radius = 5f;
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(center, radius); // Gather obstacles' distances to character as inputs to NNet
+        // Debug.Log(hitColliders.Length);
+        foreach (Collider2D col in hitColliders)
+        {
+            if (col.gameObject.name == "Ceiling (1)" || col.gameObject.name == "Character" || col.gameObject.name == "Ceiling (3)" || col.gameObject.name == "Ceiling (2)")
+                continue;
+            // Debug.Log(col.gameObject.name);
+            // Debug.Log("X distance: " + (col.gameObject.transform.position.x - transform.position.x)/10);
+            // Debug.Log("Y distance: " + (col.gameObject.transform.position.y - transform.position.y)/10);        
+        }
+
+        overallFitness = cam.GetComponent<GameManager>().overallFitness;
         sensorA = cam.GetComponent<GameManager>().aSensor;
         sensorB = cam.GetComponent<GameManager>().bSensor;
         sensorC = cam.GetComponent<GameManager>().cSensor;
@@ -83,7 +104,41 @@ public class RopeSystem : MonoBehaviour
         {
             isRopeAttached = 1;
         }
-        (leftMouse, rightMouse) = network.RunNetwork(sensorA, sensorB, sensorC, ropeAttached); // neural net
+        // (leftMouse, rightMouse) = network.RunNetwork(sensorA, sensorB, sensorC, ropeAttached); // neural net
+        (setRope, resetRope, nothing, cheat, shootAngle) = network.RunNetwork(sensorA, sensorB, sensorC, ropeAttached); // neural net
+        // Makes 4 possible control options and the rope shoot angle to be outputs of neural network
+        outputs[0] = setRope; // option to shoot the rope
+        outputs[1] = resetRope; // option to reset the rope
+        outputs[2] = nothing; // option to do nothing
+        outputs[3] = cheat; // option to render character unkillable
+        outputs[4] = shootAngle; // angle to shoot rope
+        float temp = 0; // temp variable for comparison
+        int index = 0; // variable to store the index of highest output
+        for (int i = 0; i < 3; i++) // compare outputs to select the highest output
+        {
+            if (outputs[i] > temp)
+            {   
+                temp = outputs[i];
+                index = i;
+            }
+        }
+        switch (index)
+        {
+            case 0:
+                Debug.Log("setRope");
+                break;
+            case 1:
+                Debug.Log("resetRope");
+                break;
+            case 2:
+                Debug.Log("nothing");
+                break;
+            case 3:
+                Debug.Log("cheat");
+                break;  
+            default:
+                break;
+        }
         if (counter >= ropeJoint.distance && !distanceSet && ropeAttached) //update the rope distance instantly after the rope line is rendered to prevent rope pulling back by distance joint
         { 
             ropeJoint.distance = Vector2.Distance(transform.position, ropePositions[0]);
@@ -96,11 +151,11 @@ public class RopeSystem : MonoBehaviour
         playerPosition = transform.position;
         var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
         var facingDirection = worldMousePosition - transform.position;
-        //aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
-        //  var aimDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
+         var aimDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
         // or 0.88f???
-        aimAngle = (0.52f + 0.88f * leftMouse) * Mathf.Rad2Deg; // neural net
-        var aimDirection = Quaternion.Euler(0, 0, aimAngle) * Vector2.right; // neural net
+        // aimAngle = (0.52f + 0.88f * leftMouse) * Mathf.Rad2Deg; // neural net
+        // var aimDirection = Quaternion.Euler(0, 0, aimAngle) * Vector2.right; // neural net
         if (!ropeAttached)
         {
             playerMovement.isSwinging = false;
@@ -114,18 +169,17 @@ public class RopeSystem : MonoBehaviour
     }
     private void HandleInput(Vector2 aimDirection)
     {
-        //if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))
         
-        if (!ropeAttached) // testing neural net
+       // if (!ropeAttached) // testing neural net
         {  
-            Debug.Log(aimAngle);
-            //if (aimAngle < .52 || aimAngle > 1.4) return; // setting the range for aiming angle
-            if (aimAngle < 30 || aimAngle > 80) return; // setting the range for aiming angle
+            //Debug.Log(aimAngle);
+            if (aimAngle < .52 || aimAngle > 1.4) return; // setting the range for aiming angle
+            //if (aimAngle < 30 || aimAngle > 80) return; // setting the range for aiming angle, neural net
             if (ropeAttached) return; // Prevent creating a new rope when already swinging
             if (!gameStarted) return; // Preventing creating rope when game hasn't started
             ropeRenderer.enabled = true;
             var hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
-            Debug.Log(aimDirection.ToString("F4"));
             if (hit.collider != null) // if the rope hits a valid target
             {
                 ropeAttached = true;
@@ -141,7 +195,7 @@ public class RopeSystem : MonoBehaviour
                         ropeJoint.distance = Vector2.Distance(playerPosition, hit.point) - 0.1f; // lift the character from the ground to swing
                         playerMovement.groundPull = true;
                     }
-                    Debug.Log("ropeattached");
+                    //Debug.Log("ropeattached");
                     ropePositions.Add(hit.point);
                     ropeJoint.enabled = true;
                     ropeHingeAnchorSprite.enabled = true;
@@ -154,8 +208,8 @@ public class RopeSystem : MonoBehaviour
                 ropeAttached = false;  
             }
         }
-        //if (Input.GetMouseButton(1))
-        if (rightMouse >= 0.5)
+        if (Input.GetMouseButton(1))
+       // if (rightMouse >= 0.5) neural net
         {
             ResetRope(); //  right click to disable the rope
         }
@@ -221,5 +275,9 @@ public class RopeSystem : MonoBehaviour
             } 
         }
        
+    }
+    public void ResetWithNetwork (NNet net)
+    {
+        network = net;
     }
 }

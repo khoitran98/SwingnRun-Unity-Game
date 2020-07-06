@@ -167,7 +167,8 @@ public class GameManager : MonoBehaviour
         {
             stuckTime += Time.deltaTime;
             if (stuckTime >= 4)
-                ConfirmGameOver();
+                //ConfirmGameOver();
+                OnPlayerDied();
         }
         else
         {

@@ -27,7 +27,7 @@ using UnityEngine;
 		}
 		void OnCollisionEnter2D (Collision2D collision2D) // end the game if collides with saw
 		{
-			OnPlayerDied();
+			//OnPlayerDied();
 		} 
 	}
 

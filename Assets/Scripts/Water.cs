@@ -19,7 +19,7 @@ public class Water : MonoBehaviour
     }
     void OnCollisionEnter2D (Collision2D collision2D)
 		{
-			OnPlayerDied();
+			//OnPlayerDied();
 		} 
     
 }
