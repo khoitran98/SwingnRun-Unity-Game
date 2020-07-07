@@ -160,9 +160,9 @@ public class GameManager : MonoBehaviour
         timeSinceStart += Time.deltaTime;
         CalculateFitness();
         // For neural network testing
-        if (score >= 100) {
-            ConfirmGameOver(); // if score is already too high, reset
-        }
+        // if (score >= 100) {
+        //     ConfirmGameOver(); // if score is already too high, reset
+        // }
         if (lastScore == score) // if stucked for more than 4 seconds, reset
         {
             stuckTime += Time.deltaTime;
@@ -177,7 +177,6 @@ public class GameManager : MonoBehaviour
     }
     // testing neural
     private void FixedUpdate() {
-
         // InputSensors();
         // lastPosition = transform.position;
         // //Neural network code here
