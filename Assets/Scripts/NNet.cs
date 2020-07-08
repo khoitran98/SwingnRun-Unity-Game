@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 public class NNet : MonoBehaviour
 {
-    public Matrix<float> inputLayer = Matrix<float>.Build.Dense(1, 4);
+    public Matrix<float> inputLayer = Matrix<float>.Build.Dense(1, 28);
 
     public List<Matrix<float>> hiddenLayers = new List<Matrix<float>>();
 
@@ -37,7 +37,7 @@ public class NNet : MonoBehaviour
             //WEIGHTS
             if (i == 0)
             {
-                Matrix<float> inputToH1 = Matrix<float>.Build.Dense(4, hiddenNeuronCount);
+                Matrix<float> inputToH1 = Matrix<float>.Build.Dense(28, hiddenNeuronCount);
                 weights.Add(inputToH1);
             }
             else 
@@ -114,31 +114,79 @@ public class NNet : MonoBehaviour
             }
         }
     }
-    public (float, float, float, float, float) RunNetwork (float a, float b, float c, bool d)
+    public (float, float, float, float, float) RunNetwork (float mace1X, float mace1Y, float mace2X, float mace2Y, float mace3X, float mace3Y, float saw1X, float saw1Y, float saw2X, float saw2Y, float saw3X, float saw3Y, float water1X, float water1Y, float water2X, float water2Y, float water3X, float water3Y, float tile1X, float tile1Y, float tile2X, float tile2Y, float longTile1X, float longTile1Y, float coin1X, float coin1Y, float coin2X, float coin2Y)
     {
-        inputLayer[0, 0] = Sigmoid(a);
-        inputLayer[0, 1] = Sigmoid(b);
-        inputLayer[0, 2] = Sigmoid(c);
-        if (d)
-            inputLayer[0, 3] = 1;
-        else
-            inputLayer[0, 3] = 0;
+        inputLayer[0, 0] = mace1X;
+        inputLayer[0, 1] = mace1Y;
+        inputLayer[0, 2] = mace2X;
+        inputLayer[0, 3] = mace2Y;
+        inputLayer[0, 4] = mace3X;
+        inputLayer[0, 5] = mace3Y;
+        inputLayer[0, 6] = saw1X;
+        inputLayer[0, 7] = saw1Y;
+        inputLayer[0, 8] = saw2X;
+        inputLayer[0, 9] = saw2Y;
+        inputLayer[0, 10] = saw3X;
+        inputLayer[0, 11] = saw3Y;
+        inputLayer[0, 12] = water1X;
+        inputLayer[0, 13] = water1Y;
+        inputLayer[0, 14] = water2X;
+        inputLayer[0, 15] = water2Y;
+        inputLayer[0, 16] = water3X;
+        inputLayer[0, 17] = water3Y;
+        inputLayer[0, 18] = tile1X;
+        inputLayer[0, 19] = tile1Y;
+        inputLayer[0, 20] = tile2X;
+        inputLayer[0, 21] = tile2Y;
+        inputLayer[0, 22] = longTile1X;
+        inputLayer[0, 23] = longTile1Y;
+        inputLayer[0, 24] = coin1X;
+        inputLayer[0, 25] = coin1Y;
+        inputLayer[0, 26] = coin2X;
+        inputLayer[0, 27] = coin2Y;
+        
         hiddenLayers[0] = ((inputLayer * weights[0]) + biases[0]).PointwiseTanh();
 
-        for (int i = 1; i < hiddenLayers.Count; i++)
-        {
-            hiddenLayers[i] = ((hiddenLayers[i - 1] * weights[i]) + biases[i]).PointwiseTanh();
-        }
+        // for (int i = 1; i < hiddenLayers.Count; i++)
+        // {
+        //     hiddenLayers[i] = ((hiddenLayers[i - 1] * weights[i]) + biases[i]).PointwiseTanh();
+        // }
 
         outputLayer = ((hiddenLayers[hiddenLayers.Count-1]*weights[weights.Count-1])+biases[biases.Count-1]).PointwiseTanh();
         return (Sigmoid(outputLayer[0,0]), Sigmoid(outputLayer[0,1]), Sigmoid(outputLayer[0,2]), Sigmoid(outputLayer[0,3]), Sigmoid(outputLayer[0,4]));
     }
     // testing save network
-    public void saveNetwork() // save network to file
+    public void saveBestNetwork(float fitnss) // save network to file
     {
+        System.IO.File.WriteAllText(@"C:\Users\Khoi Tran\test.txt",string.Empty);
         using (System.IO.StreamWriter file =
             new System.IO.StreamWriter(@"C:\Users\Khoi Tran\test.txt", true))
         {
+            file.WriteLine(fitnss.ToString());
+            for (int i = 0; i < weights.Count; i++)
+            {
+                for (int x = 0; x < weights[i].RowCount; x++)
+                {
+                    for (int y = 0; y < weights[i].ColumnCount; y++)
+                    {
+                        file.WriteLine(weights[i][x, y].ToString());
+                    }
+                }
+            }   
+            for (int i = 0; i < biases.Count; i++)
+            {
+                file.WriteLine(biases[i]);
+            }    
+        }
+    }
+    public void saveNetwork(int genome)
+    {
+        if (genome == 0)
+            System.IO.File.WriteAllText(@"C:\Users\Khoi Tran\population.txt",string.Empty);
+        using (System.IO.StreamWriter file =
+            new System.IO.StreamWriter(@"C:\Users\Khoi Tran\population.txt", true))
+        {
+            file.WriteLine(genome.ToString());
             for (int i = 0; i < weights.Count; i++)
             {
                 for (int x = 0; x < weights[i].RowCount; x++)

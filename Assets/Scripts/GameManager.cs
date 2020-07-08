@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public static event GameDelegate OnGameOverConfirmed;
     public static event GameDelegate Dead;
     public static GameManager Instance;
+    public RopeSystem ropeSystem;
     public GameObject StartMenu;
     public GameObject GameOver;
     public GameObject CountDownPage;
@@ -82,6 +83,7 @@ public class GameManager : MonoBehaviour
     }
     void OnPlayerDied() 
     {
+        ropeSystem.ResetRope();
         Dead(); // event sent to rope system
         int savedScore = PlayerPrefs.GetInt("HighScore"); // getting saved high score from a special saving place
         if (score > savedScore) {
@@ -154,7 +156,7 @@ public class GameManager : MonoBehaviour
         }
         Score.text = (score).ToString();
         // testing neural
-        InputSensors();
+        //InputSensors();
         lastPosition = transform.position; 
         //Neural network code here
         timeSinceStart += Time.deltaTime;
@@ -186,7 +188,7 @@ public class GameManager : MonoBehaviour
      private void CalculateFitness() {
         totalDistanceTravelled = score;
         avgSpeed = totalDistanceTravelled/timeSinceStart;
-        overallFitness = (totalDistanceTravelled*distanceMultipler)+(avgSpeed*avgSpeedMultiplier)+(((aSensor+bSensor+cSensor)/3)*sensorMultiplier);
+        overallFitness = (totalDistanceTravelled*distanceMultipler)+(avgSpeed*avgSpeedMultiplier);
     }
     private void InputSensors() {
         RaycastHit2D hit;

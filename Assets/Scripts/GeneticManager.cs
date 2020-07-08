@@ -27,6 +27,7 @@ public class GeneticManager : MonoBehaviour
     [Header("Public View")]
     public int currentGeneration;
     public int currentGenome = 0;
+    public float highestFitness = 90;
 
     private void Start()
     {
@@ -58,8 +59,11 @@ public class GeneticManager : MonoBehaviour
     public void Death (float fitness, NNet network)
     {
         // testing save network
-        if (fitness > 50) // testing save network if fitness > 50 at death
-            population[currentGenome].saveNetwork();
+        if (fitness >= highestFitness) // testing save network if fitness > 50 at death
+        {
+            highestFitness = fitness;
+            population[currentGenome].saveBestNetwork(fitness);
+        }
         if (currentGenome < population.Length -1)
         {
             population[currentGenome].fitness = fitness;
@@ -73,7 +77,13 @@ public class GeneticManager : MonoBehaviour
 
     }
 
-    
+    public void savePopulation()
+    {
+        for (int i = 0; i < population.Length; i++)
+        {
+            population[i].saveNetwork(i);
+        }
+    }
     private void RePopulate()
     {
         genePool.Clear();
@@ -132,7 +142,6 @@ public class GeneticManager : MonoBehaviour
         }
 
         return C;
-
     }
 
     private void Crossover (NNet[] newPopulation)

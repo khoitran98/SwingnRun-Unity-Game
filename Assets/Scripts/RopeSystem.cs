@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class RopeSystem : MonoBehaviour
 {
+    public delegate void PlayerDelegate();
+	public static event PlayerDelegate TurnOnShield;
     public LineRenderer ropeRenderer; 
     public LayerMask ropeLayerMask; // which physiscs layers the grappling hook raycast can hit
     public GameObject ropeHingeAnchor;
@@ -24,7 +26,6 @@ public class RopeSystem : MonoBehaviour
     private float aimAngle;
     private bool gameStarted;
     public GameObject cam; // testing neural net, adding camera object
-    private float sensorA, sensorB, sensorC; // sensors from GameManager script
     public NNet network; //testing neural net
     public float leftMouse;
     public float rightMouse;
@@ -39,6 +40,9 @@ public class RopeSystem : MonoBehaviour
     public int LAYERS = 1;
     public int NEURONS = 10;
     public float overallFitness;
+    public float mace1X, mace1Y, mace2X, mace2Y, mace3X, mace3Y, saw1X, saw1Y, saw2X, saw2Y, saw3X, saw3Y, water1X, water1Y, water2X, water2Y, water3X, water3Y, tile1X, tile1Y, tile2X, tile2Y, longTile1X, longTile1Y, coin1X, coin1Y, coin2X, coin2Y;    // variables to hold distances from player to obstacles as inputs
+    public List<float> mace, saw, water, coin, tile, longTile;
+    private int index;  
     void Awake ()
     {   
         ropeJoint.enabled = false;
@@ -74,7 +78,7 @@ public class RopeSystem : MonoBehaviour
     void Dead()
     {
         gameStarted = false;
-        ResetRope();
+        //ResetRope();
         GameObject.FindObjectOfType<GeneticManager>().Death(overallFitness, network);
     }
     void Update ()
@@ -83,19 +87,171 @@ public class RopeSystem : MonoBehaviour
         float radius = 5f;
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(center, radius); // Gather obstacles' distances to character as inputs to NNet
         // Debug.Log(hitColliders.Length);
+        mace.Clear();
+        water.Clear();
+        saw.Clear();
+        tile.Clear();
+        longTile.Clear();
+        coin.Clear();
         foreach (Collider2D col in hitColliders)
         {
             if (col.gameObject.name == "Ceiling (1)" || col.gameObject.name == "Character" || col.gameObject.name == "Ceiling (3)" || col.gameObject.name == "Ceiling (2)")
                 continue;
-            // Debug.Log(col.gameObject.name);
-            // Debug.Log("X distance: " + (col.gameObject.transform.position.x - transform.position.x)/10);
-            // Debug.Log("Y distance: " + (col.gameObject.transform.position.y - transform.position.y)/10);        
+            if (col.gameObject.name == "Mace")
+            {
+                mace.Add((col.gameObject.transform.position.x - transform.position.x)/10);
+                mace.Add((col.gameObject.transform.position.y - transform.position.y)/10);
+            }
+            else if (col.gameObject.name == "Saw")
+            {
+                saw.Add((col.gameObject.transform.position.x - transform.position.x)/10);
+                saw.Add((col.gameObject.transform.position.y - transform.position.y)/10);
+            }
+            else if (col.gameObject.name == "Water")
+            {
+                water.Add((col.gameObject.transform.position.x - transform.position.x)/10);
+                water.Add((col.gameObject.transform.position.y - transform.position.y)/10);
+                
+            }
+            else if (col.gameObject.name == "Tile")
+            {
+                tile.Add((col.gameObject.transform.position.x - transform.position.x)/10);
+                tile.Add((col.gameObject.transform.position.y - transform.position.y)/10);
+            }
+            else if (col.gameObject.name == "LongTile")
+            {
+                longTile.Add((col.gameObject.transform.position.x - transform.position.x)/10);
+                longTile.Add((col.gameObject.transform.position.y - transform.position.y)/10);
+            }
+            else if (col.gameObject.name == "Coin")
+            {
+                coin.Add((col.gameObject.transform.position.x - transform.position.x)/10);
+                coin.Add((col.gameObject.transform.position.y - transform.position.y)/10);
+            }
         }
-
+        switch (mace.Count)
+        {
+            case 0:
+                mace1X = mace1Y = mace2X = mace2Y = mace3X = mace3Y = 0;
+                break;
+            case 2:
+                mace2X = mace2Y = mace3X = mace3Y = 0;
+                mace1X = mace[0];
+                mace1Y = mace[1];
+                break;
+            case 4:
+                mace3X = mace3Y = 0;
+                mace1X = mace[0];
+                mace1Y = mace[1];
+                mace2X = mace[2];
+                mace2Y = mace[3];
+                break;
+            default:
+                mace1X = mace[0];
+                mace1Y = mace[1];
+                mace2X = mace[2];
+                mace2Y = mace[3];
+                mace3X = mace[4];
+                mace3Y = mace[5];
+                break;
+        }
+        switch (saw.Count)
+        {
+            case 0:
+                saw1X = saw1Y = saw2X = saw2Y = saw3X = saw3Y = 0;
+                break;
+            case 2:
+                saw2X = saw2Y = saw3X = saw3Y = 0;
+                saw1X = saw[0];
+                saw1Y = saw[1];
+                break;
+            case 4:
+                saw3X = saw3Y = 0;
+                saw1X = saw[0];
+                saw1Y = saw[1];
+                saw2X = saw[2];
+                saw2Y = saw[3];
+                break;
+            default:
+                saw1X = saw[0];
+                saw1Y = saw[1];
+                saw2X = saw[2];
+                saw2Y = saw[3];
+                saw3X = saw[4];
+                saw3Y = saw[5];
+                break;
+        }
+        switch (water.Count)
+        {
+            case 0:
+                water1X = water1Y = water2X = water2Y = water3X = water3Y = 0;
+                break;
+            case 2:
+                water2X = water2Y = water3X = water3Y = 0;
+                water1X = water[0];
+                water1Y = water[1];
+                break;
+            case 4:
+                water3X = water3Y = 0;
+                water1X = water[0];
+                water1Y = water[1];
+                water2X = water[2];
+                water2Y = water[3];
+                break;
+            default:
+                water1X = water[0];
+                water1Y = water[1];
+                water2X = water[2];
+                water2Y = water[3];
+                water3X = water[4];
+                water3Y = water[5];
+                break;
+        }
+        switch (tile.Count)
+        {
+            case 0:
+                tile1X = tile1Y = tile2X = tile2Y = 0;
+                break;
+            case 2:
+                tile2X = tile2Y = 0;
+                tile1X = tile[0];
+                tile1Y = tile[1];
+                break;
+            default:
+                tile1X = tile[0];
+                tile1Y = tile[1];
+                tile2X = tile[2];
+                tile2Y = tile[3];
+                break;
+        }
+        switch (longTile.Count)
+        {
+            case 0:
+                longTile1X = longTile1Y = 0;
+                break;
+            default:
+                longTile1X = longTile[0];
+                longTile1Y = longTile[1];
+                break;
+        }
+        switch (coin.Count)
+        {
+            case 0:
+                coin1X = coin1Y = coin2X = coin2Y = 0;
+                break;
+            case 2:
+                coin2X = coin2Y = 0;
+                coin1X = coin[0];
+                coin1Y = coin[1];
+                break;
+            default:
+                coin1X = coin[0];
+                coin1Y = coin[1];
+                coin2X = coin[2];
+                coin2Y = coin[3];
+                break;
+        }
         overallFitness = cam.GetComponent<GameManager>().overallFitness;
-        sensorA = cam.GetComponent<GameManager>().aSensor;
-        sensorB = cam.GetComponent<GameManager>().bSensor;
-        sensorC = cam.GetComponent<GameManager>().cSensor;
         if (!ropeAttached)
         {
             isRopeAttached = 0;
@@ -104,8 +260,7 @@ public class RopeSystem : MonoBehaviour
         {
             isRopeAttached = 1;
         }
-        // (leftMouse, rightMouse) = network.RunNetwork(sensorA, sensorB, sensorC, ropeAttached); // neural net
-        (setRope, resetRope, nothing, cheat, shootAngle) = network.RunNetwork(sensorA, sensorB, sensorC, ropeAttached); // neural net
+        (setRope, resetRope, nothing, cheat, shootAngle) = network.RunNetwork(mace1X, mace1Y, mace2X, mace2Y, mace3X, mace3Y, saw1X, saw1Y, saw2X, saw2Y, saw3X, saw3Y, water1X, water1Y, water2X, water2Y, water3X, water3Y, tile1X, tile1Y, tile2X, tile2Y, longTile1X, longTile1Y, coin1X, coin1Y, coin2X, coin2Y); // neural net
         // Makes 4 possible control options and the rope shoot angle to be outputs of neural network
         outputs[0] = setRope; // option to shoot the rope
         outputs[1] = resetRope; // option to reset the rope
@@ -113,8 +268,8 @@ public class RopeSystem : MonoBehaviour
         outputs[3] = cheat; // option to render character unkillable
         outputs[4] = shootAngle; // angle to shoot rope
         float temp = 0; // temp variable for comparison
-        int index = 0; // variable to store the index of highest output
-        for (int i = 0; i < 3; i++) // compare outputs to select the highest output
+        index = 0; // variable to store the index of highest output
+        for (int i = 0; i < 4; i++) // compare outputs to select the highest output
         {
             if (outputs[i] > temp)
             {   
@@ -122,23 +277,25 @@ public class RopeSystem : MonoBehaviour
                 index = i;
             }
         }
-        // switch (index)
-        // {
-        //     case 0:
-        //         Debug.Log("setRope");
-        //         break;
-        //     case 1:
-        //         Debug.Log("resetRope");
-        //         break;
-        //     case 2:
-        //         Debug.Log("nothing");
-        //         break;
-        //     case 3:
-        //         Debug.Log("cheat");
-        //         break;  
-        //     default:
-        //         break;
-        // }
+        switch (index)
+        {
+            case 0:
+                Debug.Log("setRope");
+                break;
+            case 1:
+                Debug.Log("resetRope");
+                ResetRope();
+                break;
+            case 2:
+                Debug.Log("nothing");
+                break;
+            case 3:
+                Debug.Log("cheat");
+                TurnOnShield();
+                break;  
+            default:
+                break;
+        }
         if (counter >= ropeJoint.distance && !distanceSet && ropeAttached) //update the rope distance instantly after the rope line is rendered to prevent rope pulling back by distance joint
         { 
             ropeJoint.distance = Vector2.Distance(transform.position, ropePositions[0]);
@@ -149,13 +306,13 @@ public class RopeSystem : MonoBehaviour
             distanceSet = true;      
         }
         playerPosition = transform.position;
-        var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
-        var facingDirection = worldMousePosition - transform.position;
-        aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
-         var aimDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        // var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
+        // var facingDirection = worldMousePosition - transform.position;
+        // aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
+        // var aimDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
         // or 0.88f???
-        // aimAngle = (0.52f + 0.88f * leftMouse) * Mathf.Rad2Deg; // neural net
-        // var aimDirection = Quaternion.Euler(0, 0, aimAngle) * Vector2.right; // neural net
+        aimAngle = (0.52f + 0.88f * outputs[4]) * Mathf.Rad2Deg; // neural net
+        var aimDirection = Quaternion.Euler(0, 0, aimAngle) * Vector2.right; // neural net
         if (!ropeAttached)
         {
             playerMovement.isSwinging = false;
@@ -169,13 +326,14 @@ public class RopeSystem : MonoBehaviour
     }
     private void HandleInput(Vector2 aimDirection)
     {
-        if (Input.GetMouseButton(0))
+        //if (Input.GetMouseButton(0))
         
        // if (!ropeAttached) // testing neural net
         {  
-            //Debug.Log(aimAngle);
-            if (aimAngle < .52 || aimAngle > 1.4) return; // setting the range for aiming angle
-            //if (aimAngle < 30 || aimAngle > 80) return; // setting the range for aiming angle, neural net
+            if (index != 0)
+                return;
+            //if (aimAngle < .52 || aimAngle > 1.4) return; // setting the range for aiming angle
+            if (aimAngle < 30 || aimAngle > 80) return; // setting the range for aiming angle, neural net
             if (ropeAttached) return; // Prevent creating a new rope when already swinging
             if (!gameStarted) return; // Preventing creating rope when game hasn't started
             ropeRenderer.enabled = true;
@@ -208,13 +366,12 @@ public class RopeSystem : MonoBehaviour
                 ropeAttached = false;  
             }
         }
-        if (Input.GetMouseButton(1))
-       // if (rightMouse >= 0.5) neural net
-        {
-            ResetRope(); //  right click to disable the rope
-        }
+        // if (Input.GetMouseButton(1))
+        // {
+        //     ResetRope(); //  right click to disable the rope
+        // }
     }
-    private void ResetRope() // reset parameter
+    public void ResetRope() // reset parameter
     {
         ropeJoint.enabled = false;
         ropeAttached = false;
