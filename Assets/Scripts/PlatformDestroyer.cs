@@ -27,7 +27,8 @@ public class PlatformDestroyer : MonoBehaviour
     {
         if(transform.position.x < platformDestructionPoint.transform.position.x)
         { 
-            gameObject.SetActive(false); // deavtivate offscreen object
+            //gameObject.SetActive(false); // deavtivate offscreen object
+            // Platform destroyer causes a coin bug so currently commented out
         }
 
     }

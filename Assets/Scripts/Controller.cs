@@ -8,10 +8,15 @@ public class Controller : MonoBehaviour
     public static event PlayerDelegate OnPlayerDied;
     public Vector3 startPos;
     Rigidbody2D rigidbody;
+    private bool onShield;
+    private float hitTimer;
+    private bool hasCollide;
     void Start () 
     {
         rigidbody = GetComponent<Rigidbody2D>();
         startPos = transform.position;
+        hasCollide = false;
+        hitTimer = 0;
     }
     void OnEnable() 
     {
@@ -37,6 +42,26 @@ public class Controller : MonoBehaviour
         if (transform.position.y < - 8) // end game when player falls offscreen
         { 
             OnPlayerDied();
+        }
+        onShield =  GameObject.Find("bubbleShield").GetComponent<Shield>().onShield;
+        if (hasCollide)
+        {
+            hitTimer += Time.deltaTime;
+        }
+        if (hitTimer > 1)
+        {
+            hasCollide = false;
+        }
+    }
+    void OnCollisionEnter2D(Collision2D collision) // End game when character collides with water or saw
+    {
+        if (collision.gameObject.name == "Water" || collision.gameObject.name == "Saw")
+        {
+            if (!onShield && !hasCollide)
+            {
+                OnPlayerDied();
+                hasCollide = true;
+            }
         }
     }
 }

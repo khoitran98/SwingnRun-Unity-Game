@@ -33,7 +33,7 @@ public class Shield : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // if (Input.GetKeyDown ("space") && shieldAvailable)
+         //if (Input.GetKeyDown ("space") && shieldAvailable)
         if (turnOn && shieldAvailable)
         {
             m_SpriteRenderer.enabled = true;

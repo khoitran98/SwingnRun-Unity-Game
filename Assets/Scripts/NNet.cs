@@ -147,10 +147,10 @@ public class NNet : MonoBehaviour
         
         hiddenLayers[0] = ((inputLayer * weights[0]) + biases[0]).PointwiseTanh();
 
-        // for (int i = 1; i < hiddenLayers.Count; i++)
-        // {
-        //     hiddenLayers[i] = ((hiddenLayers[i - 1] * weights[i]) + biases[i]).PointwiseTanh();
-        // }
+        for (int i = 1; i < hiddenLayers.Count; i++)
+        {
+            hiddenLayers[i] = ((hiddenLayers[i - 1] * weights[i]) + biases[i]).PointwiseTanh();
+        }
 
         outputLayer = ((hiddenLayers[hiddenLayers.Count-1]*weights[weights.Count-1])+biases[biases.Count-1]).PointwiseTanh();
         return (Sigmoid(outputLayer[0,0]), Sigmoid(outputLayer[0,1]), Sigmoid(outputLayer[0,2]), Sigmoid(outputLayer[0,3]), Sigmoid(outputLayer[0,4]));

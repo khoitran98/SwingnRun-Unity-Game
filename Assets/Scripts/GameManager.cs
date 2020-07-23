@@ -59,8 +59,6 @@ public class GameManager : MonoBehaviour
         SetPageState(PageState.Start);
         CountdownText.OnCountdownFinished += OnCountdownFinished;
         Controller.OnPlayerDied += OnPlayerDied;
-        Saw.OnPlayerDied += OnPlayerDied;
-        Water.OnPlayerDied += OnPlayerDied;
         Mace.OnPlayerLoseScore += OnPlayerLoseScore;
         Coin.OnPlayerScored += OnPlayerScored;
     }
@@ -69,8 +67,6 @@ public class GameManager : MonoBehaviour
         CountdownText.OnCountdownFinished -= OnCountdownFinished;
         Controller.OnPlayerDied -= OnPlayerDied;
         Coin.OnPlayerScored -= OnPlayerScored;
-        Water.OnPlayerDied -= OnPlayerDied;
-        Saw.OnPlayerDied -= OnPlayerDied;
         Mace.OnPlayerLoseScore -= OnPlayerLoseScore;
     }
     void OnCountdownFinished() 

@@ -12,6 +12,8 @@ using UnityEngine;
 		{
 			m_SpriteRenderer = GetComponent<SpriteRenderer>();
 			m_Collider2D = GetComponent<BoxCollider2D>();
+			m_SpriteRenderer.enabled = true;
+			m_Collider2D.enabled = true;
 		}
 		void OnEnable() 
 		{
@@ -26,7 +28,7 @@ using UnityEngine;
 			m_SpriteRenderer.enabled = true;
 			m_Collider2D.enabled = true;
 		}
-		void OnCollisionEnter2D (Collision2D collision2D) // allow player to walk through the coin after collecting
+		void OnTriggerEnter2D (Collider2D collision2D) // allow player to walk through the coin after collecting as collision 2D cause temporary halt
 		{
 			OnPlayerScored();
 			m_SpriteRenderer.enabled = false;

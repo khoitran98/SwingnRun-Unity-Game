@@ -66,15 +66,17 @@ public class GeneticManager : MonoBehaviour
         }
         if (currentGenome < population.Length -1)
         {
+            Debug.Log("d,");
             population[currentGenome].fitness = fitness;
             currentGenome++;
             ResetToCurrentGenome();
         }
         else
         {
-            RePopulate();
+            //RePopulate(); // debuggin
+            currentGenome = 0;
+            CreatePopulation();
         }
-
     }
 
     public void savePopulation()
@@ -90,20 +92,13 @@ public class GeneticManager : MonoBehaviour
         currentGeneration++;
         naturallySelected = 0;
         SortPopulation();
-
         NNet[] newPopulation = PickBestPopulation();
-
         Crossover(newPopulation);
         Mutate(newPopulation);
-
         FillPopulationWithRandomValues(newPopulation, naturallySelected);
-
         population = newPopulation;
-
         currentGenome = 0;
-
         ResetToCurrentGenome();
-
     }
 
     private void Mutate (NNet[] newPopulation)
