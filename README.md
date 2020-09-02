@@ -1,4 +1,4 @@
-## RedSwinger-Unity-Game
+## SwingnRun-Unity-Game
 A simple endless running web game.
 
 ## Game Mechanics
