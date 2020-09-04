@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using System;
 public class RopeSystem : MonoBehaviour
 {
     public delegate void PlayerDelegate();
@@ -30,7 +30,6 @@ public class RopeSystem : MonoBehaviour
     public float leftMouse;
     public float rightMouse;
     public float resetRope;
-    public float setRope;
     public float cheat;
     public float nothing;
     public float shootAngle;
@@ -42,7 +41,8 @@ public class RopeSystem : MonoBehaviour
     public float overallFitness;
     public float mace1X, mace1Y, mace2X, mace2Y, mace3X, mace3Y, saw1X, saw1Y, saw2X, saw2Y, saw3X, saw3Y, water1X, water1Y, water2X, water2Y, water3X, water3Y, tile1X, tile1Y, tile2X, tile2Y, longTile1X, longTile1Y, coin1X, coin1Y, coin2X, coin2Y;    // variables to hold distances from player to obstacles as inputs
     public List<float> mace, saw, water, coin, tile, longTile;
-    private int index;  
+    public List<float> correctOutputs; 
+    private int index; 
     void Awake ()
     {   
         ropeJoint.enabled = false;
@@ -50,10 +50,13 @@ public class RopeSystem : MonoBehaviour
         ropeHingeAnchorRb = ropeHingeAnchor.GetComponent<Rigidbody2D>();
         character = GetComponent<Rigidbody2D>();
         ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
-        network = GetComponent<NNet>();   
+        network = GetComponent<NNet>();
+        network.InitialiseAndLoad();
+        // network.loadNetwork();   
         leftMouse = rightMouse = 0;
         ropeAttached = false;
         outputs = new float[5];
+        // LoadGameplay();
     }
     void OnEnable() 
     {
@@ -79,7 +82,8 @@ public class RopeSystem : MonoBehaviour
     {
         gameStarted = false;
         //ResetRope();
-        GameObject.FindObjectOfType<GeneticManager>().Death(overallFitness, network);
+        // SaveGameplay(); // saving personal sequence
+        // GameObject.FindObjectOfType<GeneticManager>().Death(overallFitness, network);
     }
     void Update ()
 	{  
@@ -260,13 +264,12 @@ public class RopeSystem : MonoBehaviour
         {
             isRopeAttached = 1;
         }
-        (setRope, resetRope, nothing, cheat, shootAngle) = network.RunNetwork(mace1X, mace1Y, mace2X, mace2Y, mace3X, mace3Y, saw1X, saw1Y, saw2X, saw2Y, saw3X, saw3Y, water1X, water1Y, water2X, water2Y, water3X, water3Y, tile1X, tile1Y, tile2X, tile2Y, longTile1X, longTile1Y, coin1X, coin1Y, coin2X, coin2Y); // neural net
-        // Makes 4 possible control options and the rope shoot angle to be outputs of neural network
-        outputs[0] = setRope; // option to shoot the rope
+        (shootAngle, resetRope, nothing, cheat) = network.RunNetwork(mace1X, mace1Y, mace2X, mace2Y, mace3X, mace3Y, saw1X, saw1Y, saw2X, saw2Y, saw3X, saw3Y, water1X, water1Y, water2X, water2Y, water3X, water3Y, tile1X, tile1Y, tile2X, tile2Y, longTile1X, longTile1Y, coin1X, coin1Y, coin2X, coin2Y); // neural net
+        // Makes 3 possible control options and the rope shoot angle to be outputs of neural network
+        outputs[0] = shootAngle; // option to shoot the rope with shoot angle
         outputs[1] = resetRope; // option to reset the rope
         outputs[2] = nothing; // option to do nothing
         outputs[3] = cheat; // option to render character unkillable
-        outputs[4] = shootAngle; // angle to shoot rope
         float temp = 0; // temp variable for comparison
         index = 0; // variable to store the index of highest output
         for (int i = 0; i < 4; i++) // compare outputs to select the highest output
@@ -277,25 +280,25 @@ public class RopeSystem : MonoBehaviour
                 index = i;
             }
         }
-        switch (index)
-        {
-            case 0:
-                //Debug.Log("setRope");
-                break;
-            case 1:
-                //Debug.Log("resetRope");
-              //  ResetRope();
-                break;
-            case 2:
-                //Debug.Log("nothing");
-                break;
-            case 3:
-                //Debug.Log("cheat");
-                //TurnOnShield();
-                break;  
-            default:
-                break;
-        }
+        // switch (index)
+        // {
+        //     case 0:
+        //         //Debug.Log("setRope");
+        //         break;
+        //     case 1:
+        //         //Debug.Log("resetRope");
+        //       //  ResetRope();
+        //         break;
+        //     case 2:
+        //         //Debug.Log("nothing");
+        //         break;
+        //     case 3:
+        //         //Debug.Log("cheat");
+        //         //TurnOnShield();
+        //         break;  
+        //     default:
+        //         break;
+        // }
         if (counter >= ropeJoint.distance && !distanceSet && ropeAttached) //update the rope distance instantly after the rope line is rendered to prevent rope pulling back by distance joint
         { 
             ropeJoint.distance = Vector2.Distance(transform.position, ropePositions[0]);
@@ -308,12 +311,9 @@ public class RopeSystem : MonoBehaviour
         playerPosition = transform.position;
         var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
         var facingDirection = worldMousePosition - transform.position;
-        aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
-        var aimDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right;
+        aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x); // non neural
+        var aimDirection = Quaternion.Euler(0, 0, aimAngle * Mathf.Rad2Deg) * Vector2.right; // normal non neural
         // or 0.88f???
-        
-        // aimAngle = (0.52f + 0.88f * outputs[4]) * Mathf.Rad2Deg; // neural net
-        // var aimDirection = Quaternion.Euler(0, 0, aimAngle) * Vector2.right; // neural net
         if (!ropeAttached)
         {
             playerMovement.isSwinging = false;
@@ -328,15 +328,16 @@ public class RopeSystem : MonoBehaviour
     private void HandleInput(Vector2 aimDirection)
     {
         if (Input.GetMouseButton(0))
-        
+        //if (index == 0)
        // if (!ropeAttached) // testing neural net
         {  
             // if (index != 0)
             //     return;
-           
-            if (aimAngle < .52 || aimAngle > 1.4) return; // setting the range for aiming angle
+            //aimAngle = (0.52f + 0.88f * outputs[index]) * Mathf.Rad2Deg; // neural net
+            //aimDirection = Quaternion.Euler(0, 0, aimAngle) * Vector2.right; // neural net
+            if (aimAngle < .52 || aimAngle > 1.4) return; // setting the range for aiming angle, non neural net
 
-           // if (aimAngle < 30 || aimAngle > 80) return; // setting the range for aiming angle, neural net
+            //if (aimAngle < 30 || aimAngle > 80) return; // setting the range for aiming angle, neural net
             if (ropeAttached) return; // Prevent creating a new rope when already swinging
             if (!gameStarted) return; // Preventing creating rope when game hasn't started
             ropeRenderer.enabled = true;
@@ -368,21 +369,34 @@ public class RopeSystem : MonoBehaviour
                 ropeRenderer.enabled = false;
                 ropeAttached = false;  
             }
+            //float aimOutput = (aimAngle - 0.52f)/0.88f;
+            //float[] correctOutput = {aimOutput, 0f, 0f, 0f};
+            //network.Train(correctOutput, frame);
+           // correctOutputs.Add(aimOutput);
         }
 
-        else if (Input.GetMouseButton(1))
+        else if (Input.GetMouseButton(1)) // non neural net
+        //else if (index == 1) // neural net
         {
 
             ResetRope(); //  right click to disable the rope
+            //float[] correctOutput = {0f, 1f, 0f, 0f};
+            //correctOutputs.Add(1f);
+            //network.Train(correctOutput, frame);
         }
         else if (Input.GetKeyDown ("space"))
+        //else if (index == 3) // neural net
         {
             TurnOnShield();
-          
+            //float[] correctOutput = {0f, 0f, 0f, 1f};
+            //correctOutputs.Add(3f);
+            //network.Train(correctOutput, frame);
         }
         else
         {
-       
+            //float[] correctOutput = {0f, 0f, 1f, 0f};
+            //correctOutputs.Add(2f);
+            //network.Train(correctOutput, frame);
         }
     }
     public void ResetRope() // reset parameter
@@ -451,4 +465,28 @@ public class RopeSystem : MonoBehaviour
     {
         network = net;
     }
+    // public void SaveGameplay()
+    // {
+    //      System.IO.File.WriteAllText(@"C:\Users\Khoi Tran\gameplay.txt",string.Empty);
+    //     using (System.IO.StreamWriter file =
+    //         new System.IO.StreamWriter(@"C:\Users\Khoi Tran\gameplay.txt", true))
+    //     {
+    //         for (int i = 0; i < correctOutputs.Count; i++)
+    //         {
+    //             file.WriteLine(correctOutputs[i]);
+    //         }
+    //     }
+    // }
+    // public void LoadGameplay()
+    // {
+    //      using (System.IO.StreamReader file =
+    //         new System.IO.StreamReader(@"C:\Users\Khoi Tran\gameplay.txt", true))
+    //     {
+    //         while(file.Peek() >= 0)
+    //         {
+    //             correctOutputs.Add(float.Parse(file.ReadLine()));
+    //         }
+    //     }
+    //     System.IO.File.WriteAllText(@"C:\Users\Khoi Tran\gameplay.txt",string.Empty);
+    // }
 }

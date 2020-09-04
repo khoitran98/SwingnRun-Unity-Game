@@ -12,16 +12,15 @@ public class CountdownText : MonoBehaviour {
     { 
         countdown = GetComponent<Text>();
         countdown.text = "3";
-        OnCountdownFinished();
-        // StartCoroutine("Countdown");
+        StartCoroutine("Countdown");
     }
-//     IEnumerator Countdown() 
-//     {
-//         int count = 3;
-//         for (int i = 0; i < count; i++) {
-//             countdown.text = (count - i).ToString();
-//             yield return new WaitForSeconds(1);
-//         }
-//         OnCountdownFinished();
-//     }
+    IEnumerator Countdown() 
+    {
+        int count = 3;
+        for (int i = 0; i < count; i++) {
+            countdown.text = (count - i).ToString();
+            yield return new WaitForSeconds(1);
+        }
+        OnCountdownFinished();
+    }
  }

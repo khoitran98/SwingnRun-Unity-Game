@@ -37,7 +37,7 @@ public class PlatformGenerator : MonoBehaviour
     {
         if(transform.position.x < generationPoint.position.x && index < selector.Length)
         {
-            //  platformSelector = Random.Range (0, theObjectPools.Length);      // make platforms appear random
+            //platformSelector = Random.Range (0, theObjectPools.Length);      // make platforms appear random
             platformSelector = selector[index];
             index++;
             transform.position = new Vector3(transform.position.x + 18f, transform.position.y, transform.position.z);

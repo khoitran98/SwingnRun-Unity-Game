@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -85,13 +86,12 @@ public class GameManager : MonoBehaviour
         if (score > savedScore) {
             PlayerPrefs.SetInt("HighScore", score);
         }
-        // SetPageState(PageState.GameOver);
-        // Time.timeScale = 0; // temporarily pause game
-        ConfirmGameOver() ; // for testing only
+        SetPageState(PageState.GameOver);
+        Time.timeScale = 0; // temporarily pause game
     }
     void Start()
     {
-        SetPageState(PageState.Countdown); // for testing only
+        //SetPageState(PageState.Countdown); // for testing only
         character = GameObject.Find("Character");
         stuckTime = 0;
     }
@@ -132,14 +132,14 @@ public class GameManager : MonoBehaviour
         //when replay
         OnGameOverConfirmed(); // event sent to tap controller
         score = scoreGain = scoreLost = scoreBonus = 0; // reset the score
-        //SetPageState(PageState.Start);
-        SetPageState(PageState.Countdown);
+        SetPageState(PageState.Start);
+        //SetPageState(PageState.Countdown);
 
     }
-    // public void StartGame() 
-    // { // when play
-    //     SetPageState(PageState.Countdown);
-    // }
+    public void StartGame() 
+    { // when play
+        SetPageState(PageState.Countdown);
+    }
     void Update()
     {
         lastScore = score;
@@ -161,17 +161,17 @@ public class GameManager : MonoBehaviour
         // if (score >= 100) {
         //     ConfirmGameOver(); // if score is already too high, reset
         // }
-        if (lastScore == score) // if stucked for more than 4 seconds, reset
-        {
-            stuckTime += Time.deltaTime;
-            if (stuckTime >= 4)
-                //ConfirmGameOver();
-                OnPlayerDied();
-        }
-        else
-        {
-            stuckTime = 0;
-        }   
+        // if (lastScore == score) // if stucked for more than 4 seconds, reset, for training purpose only
+        // {
+        //     stuckTime += Time.deltaTime;
+        //     if (stuckTime >= 4)
+        //         //ConfirmGameOver();
+        //         OnPlayerDied();
+        // }
+        // else
+        // {
+        //     stuckTime = 0;
+        // }   
     }
     // testing neural
     private void FixedUpdate() {
