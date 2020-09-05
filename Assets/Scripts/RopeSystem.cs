@@ -51,7 +51,7 @@ public class RopeSystem : MonoBehaviour
         character = GetComponent<Rigidbody2D>();
         ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
         network = GetComponent<NNet>();
-        network.InitialiseAndLoad();
+        network.Initialise();
         // network.loadNetwork();   
         leftMouse = rightMouse = 0;
         ropeAttached = false;
