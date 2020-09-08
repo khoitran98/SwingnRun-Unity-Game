@@ -56,12 +56,13 @@ public class GameManager : MonoBehaviour
     private float lastScore; // used to calculate stuck time
     private float stuckTime; // character stalemate time
     private Hashtable leaderboard = new Hashtable();
+    public GameObject ldboard;
+    public GameObject s1,p1,s2,p2,s3,p3,s4,p4,s5,p5;
 
     void Awake() 
     {
         Instance = this;
         xPos = (int)transform.position.x; // get the starting position of player
-        StartCoroutine("GetData");
     }
     void OnEnable() 
     {
@@ -96,6 +97,7 @@ public class GameManager : MonoBehaviour
         }
         SetPageState(PageState.GameOver);
         Time.timeScale = 0; // temporarily pause game
+        StartCoroutine("GetData");
     }
     void Start()
     {
@@ -225,13 +227,24 @@ public class GameManager : MonoBehaviour
         {
             int score = Int32.Parse(jsonResult[x]["score"]);
             playersScore.Add(score);
-            leaderboard.Add(score, jsonResult[x]["name"]);
+            leaderboard.Add(score, jsonResult[x]["name"].ToString().Replace("\"", ""));
         }
         playersScore.Sort();
-        foreach(var x in playersScore)
-        {
-            Debug.Log(x);
-        }
-        Debug.Log(leaderboard[36]);
+        int sc = playersScore[playersScore.Count - 1];
+        s1.GetComponent<Text>().text = sc.ToString();
+        p1.GetComponent<Text>().text = leaderboard[sc].ToString();
+        sc = playersScore[playersScore.Count - 2];
+        s2.GetComponent<Text>().text = sc.ToString();
+        p2.GetComponent<Text>().text = leaderboard[sc].ToString();
+        sc = playersScore[playersScore.Count - 3];
+        s3.GetComponent<Text>().text = sc.ToString();
+        p3.GetComponent<Text>().text = leaderboard[sc].ToString();
+        sc = playersScore[playersScore.Count - 4];
+        s4.GetComponent<Text>().text = sc.ToString();
+        p4.GetComponent<Text>().text = leaderboard[sc].ToString();
+        sc = playersScore[playersScore.Count - 5];
+        s5.GetComponent<Text>().text = sc.ToString();
+        p5.GetComponent<Text>().text = leaderboard[sc].ToString();
+        ldboard.SetActive(true);
     }
 }
