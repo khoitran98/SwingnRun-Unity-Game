@@ -214,7 +214,7 @@ public class GameManager : MonoBehaviour
         UnityWebRequest webReq = new UnityWebRequest();
         webReq.downloadHandler = new DownloadHandlerBuffer();
         // send the web request and wait for a returning result
-        webReq.url = "https://glacial-badlands-14911.herokuapp.com/api/players";
+        webReq.url = "";
         yield return webReq.SendWebRequest();
         string rawJson = Encoding.Default.GetString(webReq.downloadHandler.data);
         // parse the raw string into a json result we can easily read
