@@ -55,7 +55,8 @@ public class GameManager : MonoBehaviour
     public float aSensor,bSensor,cSensor; // 3 object detection sensors
     private float lastScore; // used to calculate stuck time
     private float stuckTime; // character stalemate time
-    
+    private Hashtable leaderboard = new Hashtable();
+
     void Awake() 
     {
         Instance = this;
@@ -218,7 +219,19 @@ public class GameManager : MonoBehaviour
         yield return webReq.SendWebRequest();
         string rawJson = Encoding.Default.GetString(webReq.downloadHandler.data);
         // parse the raw string into a json result we can easily read
-        var jsonResult = JSON.Parse(rawJson)[0]["score"];
-        Debug.Log(jsonResult);  
+        var jsonResult = JSON.Parse(rawJson).AsArray;
+        List<int> playersScore = new List<int>();
+        for (int x  = 0; x < jsonResult.Count; x++)
+        {
+            int score = Int32.Parse(jsonResult[x]["score"]);
+            playersScore.Add(score);
+            leaderboard.Add(score, jsonResult[x]["name"]);
+        }
+        playersScore.Sort();
+        foreach(var x in playersScore)
+        {
+            Debug.Log(x);
+        }
+        Debug.Log(leaderboard[36]);
     }
 }
