@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         xPos = (int)transform.position.x; // get the starting position of player
+        StartCoroutine("GetData");
     }
     void OnEnable() 
     {
@@ -207,36 +208,17 @@ public class GameManager : MonoBehaviour
             cSensor = hit.distance/20;
         }
     }
-    public class Player
+    IEnumerator GetData ()
     {
-        public int number;
-        public string name;
+        // create the web request and download handler
+        UnityWebRequest webReq = new UnityWebRequest();
+        webReq.downloadHandler = new DownloadHandlerBuffer();
+        // send the web request and wait for a returning result
+        webReq.url = "https://glacial-badlands-14911.herokuapp.com/api/players";
+        yield return webReq.SendWebRequest();
+        string rawJson = Encoding.Default.GetString(webReq.downloadHandler.data);
+        // parse the raw string into a json result we can easily read
+        var jsonResult = JSON.Parse(rawJson)[0]["score"];
+        Debug.Log(jsonResult);  
     }
-    // IEnumerator GetData ()
-    // {
-    //     Player player = new Player();
-    //     player.number = 300;
-    //     player.name = "khoi";
-    //     string json = JsonUtility.ToJson(player);
-    //     // create the web request and download handler
-    //     UnityWebRequest webReq = new UnityWebRequest();
-    //     webReq.downloadHandler = new DownloadHandlerBuffer();
-    //     byte[] myData;
-    //     myData = System.Text.Encoding.UTF8.GetBytes ("?person=" + "khoi" + "&number=" + "123");
-    //     // build the url and query
-    //     webReq.url = "https://glacial-badlands-14911.herokuapp.com/api/persons";
-    //     using (UnityWebRequest www = UnityWebRequest.Post("https://glacial-badlands-14911.herokuapp.com/api/players?name=henry&score=123","dummy"))
-    //     {
-    //         yield return www.Send();
-    //         Debug.Log(www.url.ToString());
-    //     }
-    //     // send the web request and wait for a returning result
-    //     // yield return webReq.SendWebRequest();
-    //     // string rawJson = Encoding.Default.GetString(webReq.downloadHandler.data);
-
-    //     // // parse the raw string into a json result we can easily read
-    //     // var jsonResult = JSON.Parse(rawJson)[0]["id"];
-    //     // Debug.Log(jsonResult);
-    // }
-    
 }

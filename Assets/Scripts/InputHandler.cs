@@ -25,7 +25,7 @@ public class InputHandler : MonoBehaviour
     }
     IEnumerator Save ()
     {
-        using (UnityWebRequest www = UnityWebRequest.Post("https://glacial-badlands-14911.herokuapp.com/api/players?name=" + name + "&score=" + score,"dummy"))
+        using (UnityWebRequest www = UnityWebRequest.Post("=" + name + "&score=" + score,"dummy"))
         {
             if (name.Length > 8)
             {
