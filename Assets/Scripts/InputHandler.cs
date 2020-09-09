@@ -30,13 +30,13 @@ public class InputHandler : MonoBehaviour
             if (name.Length > 8)
             {
                 longText.SetActive(true);
-                yield return new WaitForSecondsRealtime(2);
+                yield return new WaitForSecondsRealtime(1);
                 longText.SetActive(false);
             }
             else if (name.Length < 3)
             {
                 shortText.SetActive(true);
-                yield return new WaitForSecondsRealtime(2);
+                yield return new WaitForSecondsRealtime(1);
                 shortText.SetActive(false);
             }
             else {
@@ -44,12 +44,12 @@ public class InputHandler : MonoBehaviour
                 if (www.downloadHandler.text.ToString().Contains("unique"))
                 {
                     warningText.SetActive(true);
-                    yield return new WaitForSecondsRealtime(2);
+                    yield return new WaitForSecondsRealtime(1);
                     warningText.SetActive(false);
                 }
                 else {
                     successText.SetActive(true);
-                    yield return new WaitForSecondsRealtime(2);
+                    yield return new WaitForSecondsRealtime(1);
                     successText.SetActive(false);
                 }
             }

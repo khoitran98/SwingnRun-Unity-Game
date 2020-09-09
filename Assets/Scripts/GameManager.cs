@@ -8,6 +8,7 @@ using System;
 using System.Text;
 using System.Linq;
 using SimpleJSON;
+using Newtonsoft.Json;
 
 
 public class GameManager : MonoBehaviour
@@ -55,9 +56,10 @@ public class GameManager : MonoBehaviour
     public float aSensor,bSensor,cSensor; // 3 object detection sensors
     private float lastScore; // used to calculate stuck time
     private float stuckTime; // character stalemate time
-    private Hashtable leaderboard = new Hashtable();
     public GameObject ldboard;
     public GameObject s1,p1,s2,p2,s3,p3,s4,p4,s5,p5;
+    Hashtable leaderboard = new Hashtable();
+    List<int> playersScore = new List<int>();
 
     void Awake() 
     {
@@ -95,6 +97,8 @@ public class GameManager : MonoBehaviour
         if (score > savedScore) {
             PlayerPrefs.SetInt("HighScore", score);
         }
+        playersScore.Clear();
+        leaderboard.Clear();
         SetPageState(PageState.GameOver);
         Time.timeScale = 0; // temporarily pause game
         StartCoroutine("GetData");
@@ -222,12 +226,16 @@ public class GameManager : MonoBehaviour
         string rawJson = Encoding.Default.GetString(webReq.downloadHandler.data);
         // parse the raw string into a json result we can easily read
         var jsonResult = JSON.Parse(rawJson).AsArray;
-        List<int> playersScore = new List<int>();
         for (int x  = 0; x < jsonResult.Count; x++)
         {
             int score = Int32.Parse(jsonResult[x]["score"]);
-            playersScore.Add(score);
-            leaderboard.Add(score, jsonResult[x]["name"].ToString().Replace("\"", ""));
+            if (leaderboard.ContainsKey(score))
+                leaderboard[score] = leaderboard[score].ToString() + " & " + jsonResult[x]["name"].ToString().Replace("\"", "");
+            else
+            {
+                leaderboard.Add(score, jsonResult[x]["name"].ToString().Replace("\"", ""));
+                playersScore.Add(score);
+            }
         }
         playersScore.Sort();
         int sc = playersScore[playersScore.Count - 1];
@@ -246,5 +254,8 @@ public class GameManager : MonoBehaviour
         s5.GetComponent<Text>().text = sc.ToString();
         p5.GetComponent<Text>().text = leaderboard[sc].ToString();
         ldboard.SetActive(true);
+        StopCoroutine("GetData");
+        // var playerToJson = JsonConvert.SerializeObject(playersScore);
+        // Debug.Log(playerToJson);
     }
 }
