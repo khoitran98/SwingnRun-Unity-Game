@@ -101,7 +101,6 @@ public class GameManager : MonoBehaviour
         leaderboard.Clear();
         SetPageState(PageState.GameOver);
         Time.timeScale = 0; // temporarily pause game
-        StartCoroutine("GetData");
     }
     void Start()
     {
@@ -153,6 +152,7 @@ public class GameManager : MonoBehaviour
     public void StartGame() 
     { // when play
         SetPageState(PageState.Countdown);
+        StartCoroutine("GetData");
     }
     void Update()
     {
