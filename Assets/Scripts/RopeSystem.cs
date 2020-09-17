@@ -369,9 +369,9 @@ public class RopeSystem : MonoBehaviour
                 ropeRenderer.enabled = false;
                 ropeAttached = false;  
             }
-            //float aimOutput = (aimAngle - 0.52f)/0.88f;
-            //float[] correctOutput = {aimOutput, 0f, 0f, 0f};
-            //network.Train(correctOutput, frame);
+            float aimOutput = (aimAngle - 0.52f)/0.88f;
+            float[] correctOutput = {aimOutput, 0f, 0f, 0f};
+            network.Train(correctOutput);
            // correctOutputs.Add(aimOutput);
         }
 
@@ -380,23 +380,23 @@ public class RopeSystem : MonoBehaviour
         {
 
             ResetRope(); //  right click to disable the rope
-            //float[] correctOutput = {0f, 1f, 0f, 0f};
+            float[] correctOutput = {0f, 1f, 0f, 0f};
             //correctOutputs.Add(1f);
-            //network.Train(correctOutput, frame);
+            network.Train(correctOutput);
         }
         else if (Input.GetKeyDown ("space"))
         //else if (index == 3) // neural net
         {
             TurnOnShield();
-            //float[] correctOutput = {0f, 0f, 0f, 1f};
+            float[] correctOutput = {0f, 0f, 0f, 1f};
             //correctOutputs.Add(3f);
-            //network.Train(correctOutput, frame);
+            network.Train(correctOutput);
         }
         else
         {
-            //float[] correctOutput = {0f, 0f, 1f, 0f};
+            float[] correctOutput = {0f, 0f, 1f, 0f};
             //correctOutputs.Add(2f);
-            //network.Train(correctOutput, frame);
+            network.Train(correctOutput);
         }
     }
     public void ResetRope() // reset parameter

@@ -101,6 +101,7 @@ public class GameManager : MonoBehaviour
         leaderboard.Clear();
         SetPageState(PageState.GameOver);
         Time.timeScale = 0; // temporarily pause game
+        character.GetComponent<NNet>().saveNetworkToServer();
     }
     void Start()
     {
@@ -255,7 +256,7 @@ public class GameManager : MonoBehaviour
         p5.GetComponent<Text>().text = leaderboard[sc].ToString();
         ldboard.SetActive(true);
         StopCoroutine("GetData");
-        // var playerToJson = JsonConvert.SerializeObject(playersScore);
+        //var playerToJson = JsonConvert.SerializeObject(playersScore);
         // Debug.Log(playerToJson);
     }
 }

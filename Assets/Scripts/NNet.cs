@@ -5,8 +5,10 @@ using System.Linq;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.IO;
+using UnityEngine.Networking;
 using Random = UnityEngine.Random;
-
+using SimpleJSON;
+using Newtonsoft.Json;
 public class NNet : MonoBehaviour
 {
     // public Matrix<float> inputLayer = Matrix<float>.Build.Dense(1, 28);
@@ -234,8 +236,9 @@ public class NNet : MonoBehaviour
     
     // private const float WeightDecay = 0.001f;
     private const float LearningRate = 0.015f;
-    StreamReader sr = new StreamReader(@"C:\Users\Khoi Tran\training_data.txt");
+    //StreamReader sr = new StreamReader(@"C:\Users\Khoi Tran\training_data.txt");
     public float[] previousOutputs = {0f,1f,0f,0f};
+    float[] matrix = new float[1424];
     public void Initialise()
     {
         List<int> structure = new List<int>()
@@ -663,4 +666,46 @@ public class NNet : MonoBehaviour
             }
         }
     }
+    public void saveNetworkToServer()
+    {
+        StartCoroutine("SaveNet");
+    }
+    class NetMatrix {
+        public float[] values;
+    }
+    IEnumerator SaveNet()
+    {
+        int counter = 0;
+        for (var i = 0; i < weights.Length; i++)
+        {
+            for (var j = 0; j < weights[i].Length; j++)
+            {
+                for (var k = 0; k < weights[i][j].Length; k++)
+                {
+                    matrix[counter] = weights[i][j][k];
+                    counter++;
+                }
+            }
+        }
+        for (var i = 0; i < biases.Length; i++)
+        {
+            for (var j = 0; j < biases[i].Length; j++)
+            {
+                matrix[counter] = biases[i][j];
+                counter++;
+            }
+        }
+        NetMatrix net = new NetMatrix{
+            values = matrix
+        };
+        string json = JsonConvert.SerializeObject(net);
+        var uwr = new UnityWebRequest("", "PUT"); // using POST request with json
+        byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+        uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
+        uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+        uwr.SetRequestHeader("Content-Type", "application/json");
+        //Send the request then wait here until it returns 
+        yield return uwr.SendWebRequest();
+    }
 }
+

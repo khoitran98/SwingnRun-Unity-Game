@@ -55,5 +55,4 @@ public class InputHandler : MonoBehaviour
             }
         }
     }
-
 }
