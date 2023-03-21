@@ -1,6 +1,9 @@
 ## SwingnRun-Unity-Game
-A simple endless running web game.
+A simple endless running web game (Testing link is currently having some unresolved issue).
 https://khoitran98.github.io/SwingnRun-WebDemo/.
+A quick preview:
+https://gifs.com/gif/reswinger-4QJkA1
+
 
 ## Game Mechanics
 * Left click to shoot rope and swing, right click to release the rope, space for shield
